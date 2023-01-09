@@ -1,0 +1,197 @@
+<html>
+  <head>
+    <title>Study Planner</title>
+    <link rel="icon" type="image/png" href="img/android-chrome-192x192.png" />
+    <link rel="stylesheet" href="mainstyle.css">
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+      }
+      form {
+        display: flex;
+        flex-direction: column;
+        width: 30%;
+        margin: 0 auto;
+        padding: 1em;
+        background-color: rgb(24, 22, 22);
+        color: gold;
+        border-radius: 4px;
+      }
+      label {
+        font-weight: bold;
+      }
+      input[type="text"], input[type="number"], select {
+        padding: 0.5em;
+        margin: 0.5em 0;
+        border: 1px solid gold;
+        border-radius: 4px;
+        background-color: rgba(0, 0, 0, 0.774);
+        color: white;
+      }
+      input[type="submit"] {
+        padding: 0.5em 1em;
+        margin: 0.5em 0;
+        background-color: rgb(0, 0, 0);
+        color: gold;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      .box2 ul {
+        display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-start;
+  list-style: none;
+  padding: 0;
+  width: 90%;
+  margin: 0 auto;
+  padding: 1em;
+  background-color: rgb(17, 17, 17);
+  border-radius: 4px;
+    
+      }
+      .box2 li {
+        display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 1em;
+  margin: 0.5em 0.5em;
+  background-color: black;
+  color: gold;
+  border-radius: 4px;
+  width: 27%;
+      }
+      .box2 li p {
+        margin: 0.5em 0;
+      }
+     .box2 li p:first-of-type {
+        font-weight: bold;
+      }
+    .box2  li p:nth-of-type(2) {
+        font-style: italic;
+      }
+      button {
+        padding: 0.5em 1em;
+        margin: 1em 0;
+        background-color: black;
+        color:gold;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+
+      h1 {
+        color: gold;
+        font-family: 'Times New Roman';
+        font-size: 50px;
+        padding-bottom: 10px;
+        margin-bottom: 10px;
+      }
+    </style>
+  </head>
+
+    <body>
+      <div class="main" style="height: fit-content;">
+      <div class="navbar" >
+        <a href="main.html" ><img src="img/logo2.png" class="logo"></a>
+        <ul style="margin-top: 13px;">
+          <li><a href="main.html">HOME</a></li>
+          <li><a href="content.html">CONTENT</a></li>
+          <li><a href="activities.html">ACTIVITIES</a></li>
+          <li><a href="about.html">ABOUT</a></li>
+        </ul>
+      </div>
+      <div class="hr"></div>
+      <br> <br> <br>
+      <h1 style="text-align: center;">Study Planner</h1>
+      <form>
+        <label for="subject">Subject:</label><br>
+        <input type="text" id="subject" name="subject"><br>
+        <label for="study-time">Study Time (minutes):</label><br>
+        <input type="number" id="study-time" name="study-time"><br>
+        <label for="description">Description:</label><br>
+        <input type="text" id="description" name="description"><br>
+        <label for="note">Note:</label><br>
+        <input type="text" id="note" name="note"><br>
+        <label for="day">Day:</label><br>
+        <select id="day" name="day">
+          <option value="Monday">Monday</option>
+          <option value="Tuesday">Tuesday</option>
+          <option value="Wednesday">Wednesday</option>
+          <option value="Thursday">Thursday</option>
+          <option value="Friday">Friday</option>
+          <option value="Saturday">Saturday</option>
+          <option value="Sunday">Sunday</option>
+        </select><br><br>
+        <input type="submit" value="Add to Plan">
+        <button id="download-button">Download Plan</button>
+      </form> 
+      <div class="box2">
+      <h2>Study Plan:</h2>
+      <ul id="study-plan">
+      </ul>
+    </div>
+  </div>
+   <script>
+    
+    const form = document.querySelector('form');
+    const studyPlan = document.querySelector('#study-plan');
+const downloadButton = document.querySelector('#download-button');
+
+form.addEventListener('submit', e => {
+  e.preventDefault();
+  const subject = document.querySelector('#subject').value;
+  const studyTime = document.querySelector('#study-time').value;
+  const description = document.querySelector('#description').value;
+  const note = document.querySelector('#note').value;
+  const day = document.querySelector('#day').value;
+  const item = `
+    <li>
+      <p>Subject: ${subject}</p>
+      <p>Study Time: ${studyTime} minutes</p>
+      <p>Description: ${description}</p>
+      <p>Note: ${note}</p>
+      <p>Day: ${day}</p>
+    </li>
+  `;
+  studyPlan.insertAdjacentHTML('beforeend', item);
+  form.reset();
+});
+
+downloadButton.addEventListener('click', () => {
+  const studyPlanHtml = studyPlan.innerHTML;
+
+  // Create a new canvas element
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+
+  // Set the width and height of the canvas
+  canvas.width = studyPlan.offsetWidth;
+  canvas.height = studyPlan.offsetHeight;
+
+  // Render the study plan HTML to the canvas
+  const data = '<svg xmlns="http://www.w3.org/2000/svg" width="' + canvas.width + '" height="' + canvas.height + '">' +
+               '<foreignObject width="100%" height="100%">' +
+               '<div xmlns="http://www.w3.org/1999/xhtml">' + studyPlanHtml + '</div>' +
+               '</foreignObject>' +
+               '</svg>';
+  const img = new Image();
+  img.setAttribute('src', 'data:image/svg+xml;base64,' + btoa(data));
+  img.onload = function() {
+    ctx.drawImage(img, 0, 0);
+    const imageUrl = canvas.toDataURL('image/png');
+
+    // Create a new anchor element and set its href and download attributes
+    const anchor = document.createElement('a');
+    anchor.href = imageUrl;
+    anchor.download = 'study-plan.png';
+
+    // Click the anchor element to trigger the download
+    anchor.click();
+  }
+});
+   </script>
+    </body>
+    
